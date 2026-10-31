@@ -1,0 +1,59 @@
+rules_version = '2';
+// ALBEYK – pravila za Firestore bazu.
+// Kupci smeju samo da pošalju porudžbinu i da prate SVOJU porudžbinu (po tajnom ID-ju).
+// Sve ostalo (lista porudžbina, izmene, podešavanja) sme samo prijavljeno osoblje.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function staff() { return request.auth != null; }
+    function str(v, max) { return v is string && v.size() <= max; }
+
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if staff();
+    }
+
+    match /counters/{day} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['n']) && request.resource.data.n == 1;
+      allow update: if request.resource.data.keys().hasOnly(['n']) && request.resource.data.n == resource.data.n + 1;
+      allow delete: if staff();
+    }
+
+    // magacin, radnici, normativi i fiskalni zahtevi: samo prijavljeno osoblje
+    match /{col}/{id} {
+      allow read, write: if staff() && col in ['inv_items','inv_moves','inv_purchases','inv_settings','recipes','workers','shifts','meals','closings','fiscal'];
+    }
+
+    match /orders/{id} {
+      allow get: if true;
+      allow list: if staff();
+
+      allow create: if
+        request.resource.data.keys().hasOnly(['items','total','name','phone','note','pickupMin','spicy','src','num','day','status','createdAt'])
+        && request.resource.data.status == 'novo'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 60
+        && request.resource.data.total is number
+        && str(request.resource.data.name, 60) && request.resource.data.name.size() >= 2
+        && str(request.resource.data.phone, 30)
+        && str(request.resource.data.note, 300)
+        && request.resource.data.pickupMin is int && request.resource.data.pickupMin >= 0 && request.resource.data.pickupMin <= 120
+        && request.resource.data.spicy in ['', 'ljuto', 'neljuto']
+        && request.resource.data.num == getAfter(/databases/$(database)/documents/counters/$(request.resource.data.day)).data.n
+        && (!exists(/databases/$(database)/documents/settings/main)
+            || get(/databases/$(database)/documents/settings/main).data.get('accepting', true) != false);
+
+      // kupac sme samo da otkaže dok porudžbina još nije prihvaćena
+      allow update: if staff() || (
+        resource.data.status == 'novo'
+        && request.resource.data.status == 'otkazano'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','canceledAt'])
+      );
+
+      allow delete: if staff();
+    }
+  }
+}

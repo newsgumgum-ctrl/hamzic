@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#24201C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ALBEYK Kuhinja</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#24201C; --rail:#2F2A25; --paper:#FFFDF6; --ink:#24201C; --muted:#7A7166;
+  --red:#DD0001; --gold:#FDB103; --green:#14915A; --line:#E8E1D3;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:#F4EEE4;font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.3;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden;font-variant-numeric:tabular-nums}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+[hidden]{display:none !important}
+
+.bar{flex:none;display:flex;align-items:center;gap:18px;padding:10px 18px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid #3B352F;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px}
+.brand img{width:38px;height:38px;border-radius:10px;background:#fff}
+.clock{font-size:26px;font-weight:900;letter-spacing:-.01em}
+.count{font-weight:700;color:#CFC5B6}
+.count b{color:#fff;font-size:20px;font-weight:900}
+.waiting{background:var(--gold);color:var(--ink);font-weight:800;border-radius:999px;padding:6px 12px;font-size:14px}
+.tools{margin-left:auto;display:flex;gap:8px}
+.ibtn{width:46px;height:46px;border-radius:12px;border:0;background:#3B352F;color:#fff;display:grid;place-items:center;text-decoration:none}
+.ibtn svg{width:22px;height:22px}
+.ibtn.off{background:#fff;color:var(--red)}
+.net{font-size:13px;font-weight:800;background:var(--red);color:#fff;padding:5px 10px;border-radius:999px}
+.demo{flex:none;background:#463C2A;color:#FFE3A1;font-size:14px;font-weight:600;padding:7px 18px}
+
+/* ukupno za spremiti */
+.agg{flex:none;display:flex;gap:8px;overflow-x:auto;padding:12px 18px;scrollbar-width:none;align-items:center}
+.agg::-webkit-scrollbar{display:none}
+.agg > span{flex:none;font-weight:700;color:#CFC5B6;margin-right:4px}
+.chip{flex:none;background:#3B352F;border-radius:12px;padding:8px 12px;font-weight:800;font-size:16px;white-space:nowrap}
+.chip b{color:var(--gold);font-size:19px;margin-right:4px}
+
+/* šina sa bonovima */
+.rail{flex:1;min-height:0;display:flex;gap:16px;overflow-x:auto;overflow-y:hidden;padding:6px 18px 18px;align-items:flex-start;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.empty{margin:auto;text-align:center;color:#A99E8F;max-width:30ch}
+.empty b{display:block;color:#fff;font-size:28px;margin-bottom:6px}
+.ticket{flex:none;width:320px;max-height:100%;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border-radius:6px 6px 14px 14px;scroll-snap-align:start;position:relative;
+  -webkit-mask:radial-gradient(circle 7px at 50% 0,#0000 98%,#000) 0 0/18px 100% repeat-x;mask:radial-gradient(circle 7px at 50% 0,#0000 98%,#000) 0 0/18px 100% repeat-x}
+.ticket.fresh{animation:drop .6s cubic-bezier(.2,1.3,.4,1)}
+@keyframes drop{from{transform:translateY(-40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.ticket.fresh{animation:none}}
+.thead{flex:none;padding:18px 16px 12px;background:var(--st);color:#fff;display:flex;align-items:flex-end;gap:10px}
+.ticket[data-u="ok"]{--st:var(--green)}
+.ticket[data-u="soon"]{--st:var(--gold)}
+.ticket[data-u="soon"] .thead{color:var(--ink)}
+.ticket[data-u="late"]{--st:var(--red)}
+.ticket[data-u="late"] .thead{animation:blink 1.4s steps(2,end) infinite}
+@keyframes blink{50%{filter:brightness(1.25)}}
+@media (prefers-reduced-motion:reduce){.ticket[data-u="late"] .thead{animation:none}}
+.tnum{font-size:44px;font-weight:900;line-height:.9;letter-spacing:-.03em}
+.ttime{margin-left:auto;text-align:right;font-weight:800;font-size:15px}
+.ttime b{display:block;font-size:26px;font-weight:900;line-height:1}
+.tmeta{flex:none;padding:10px 16px 6px;font-weight:700;color:var(--muted);font-size:15px;display:flex;justify-content:space-between;gap:10px}
+.tmeta .who{color:var(--ink);font-weight:800}
+.titems{flex:1;min-height:0;overflow:auto;list-style:none;margin:0;padding:4px 10px 8px}
+.titems li{display:grid;grid-template-columns:52px 1fr;gap:4px;align-items:baseline;padding:10px 8px;border-bottom:2px dashed var(--line);border-radius:8px;cursor:pointer;user-select:none}
+.titems li:last-child{border-bottom:0}
+.titems .q{font-size:28px;font-weight:900}
+.titems .n{font-size:21px;font-weight:800;line-height:1.15}
+.titems small{grid-column:2;display:block;font-size:15px;font-weight:600;color:var(--muted);margin-top:2px}
+.titems li.done{opacity:.4}
+.titems li.done .n,.titems li.done .q{text-decoration:line-through;text-decoration-thickness:3px}
+.titems li:active{background:#F3ECDD}
+.flags{flex:none;padding:0 14px 10px;display:flex;flex-direction:column;gap:8px}
+.spicy{align-self:flex-start;font-size:20px;font-weight:900;border-radius:10px;padding:6px 12px;background:var(--red);color:#fff}
+.spicy.mild{background:var(--green)}
+.tnote{background:#FFEDB5;border-left:6px solid var(--gold);border-radius:8px;padding:8px 10px;font-size:18px;font-weight:800;white-space:pre-wrap;overflow-wrap:anywhere}
+.tfoot{flex:none;padding:10px 14px 14px}
+.bump{width:100%;border:0;border-radius:12px;background:var(--ink);color:#fff;font-size:22px;font-weight:900;padding:18px}
+.bump.all{background:var(--green);animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:scale(1.03)}}
+@media (prefers-reduced-motion:reduce){.bump.all{animation:none}}
+.bump:active{transform:scale(.97)}
+
+/* upravo spremno */
+.done-strip{flex:none;display:flex;align-items:center;gap:10px;padding:10px 18px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid #3B352F;overflow-x:auto;min-height:62px}
+.done-strip > span{flex:none;font-weight:700;color:#CFC5B6}
+.dchip{flex:none;display:flex;align-items:center;gap:10px;background:#2F4A3A;border-radius:12px;padding:6px 6px 6px 12px;font-weight:900;font-size:18px}
+.dchip button{border:0;border-radius:9px;background:#fff;color:var(--ink);font-weight:800;font-size:14px;padding:7px 10px}
+
+.start{position:fixed;inset:0;z-index:80;background:var(--bg);display:grid;place-items:center;text-align:center;padding:24px}
+.start img{width:100px;height:100px;border-radius:24px;background:#fff;margin:0 auto 18px}
+.start h1{margin:0 0 8px;font-size:40px;font-weight:900}
+.start p{margin:0 auto 24px;max-width:36ch;color:#CFC5B6;font-size:18px}
+.start .go{font-size:20px;font-weight:900;padding:18px 34px;border:0;background:var(--gold);color:var(--ink);border-radius:999px}
+.login{max-width:380px;margin:0 auto;text-align:left;background:var(--paper);color:var(--ink);border-radius:20px;padding:22px}
+.login label{display:block;font-weight:700;font-size:14px;margin-bottom:4px}
+.login input{width:100%;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px;color:var(--ink);background:#fff}
+.login .err{color:var(--red);font-weight:700;font-size:14px;min-height:20px;margin-bottom:6px}
+.login .go{width:100%}
+.login .go-login{width:100%;border:0;border-radius:12px;padding:15px;font-weight:900;font-size:18px;background:var(--gold);color:var(--ink)}
+.login .go-login:disabled{opacity:.6}
+.login .pw{position:relative}
+.login .pw input{padding-right:96px}
+.login .pw button{position:absolute;right:6px;top:6px;border:0;background:transparent;font-weight:800;font-size:14px;padding:8px 10px;border-radius:8px;color:var(--muted)}
+.admin-label{display:inline-block;font-weight:800;font-size:15px;border-radius:999px;padding:5px 12px;margin-bottom:16px;background:rgba(255,255,255,.18)}
+.ibtn.wide{width:auto;padding:0 12px;gap:6px;display:inline-flex;align-items:center;font-weight:800;font-size:14px}
+
+.ibtn.wide{background:#3B352F;color:#fff}
+.ibtn.wide[aria-pressed="true"]{background:var(--gold);color:var(--ink)}
+body.vert .rail{flex-wrap:wrap;overflow-x:hidden;overflow-y:auto;align-content:flex-start;scroll-snap-type:none}
+body.vert .ticket{max-height:none}
+@media (max-width:700px){body.vert .ticket{width:100%}}
+body.embed #fsBtn,body.embed #logoutBtn{display:none}
+@media (max-width:560px){.ibtn.wide span{display:none}.ibtn.wide{width:46px;padding:0;justify-content:center}}
+.toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:var(--ink);border-radius:14px;padding:12px 18px;font-weight:800;z-index:70;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+
+@media (max-width:700px){.ticket{width:86vw}.clock{font-size:22px}}
+</style>
+</head>
+<body>
+
+<div class="start" id="start">
+  <div>
+    <img src="logo.png" alt="">
+    <h1>ALBEYK Kuhinja</h1>
+    <span class="admin-label">Admin panel</span>
+    <div id="loginBox" hidden></div>
+    <div id="goBox">
+      <p>Dodirni da pokreneš kuhinju. Uključuje se zvuk za nove bonove i ekran ostaje upaljen.</p>
+      <button class="go" id="goBtn">Pokreni kuhinju</button>
+    </div>
+  </div>
+</div>
+
+<header class="bar">
+  <div class="brand"><img src="logo.png" alt="">Kuhinja</div>
+  <div class="clock" id="clock">--:--</div>
+  <div class="count">U pripremi <b id="nPrep">0</b></div>
+  <span class="waiting" id="waiting" hidden></span>
+  <span class="net" id="net" hidden>Nema interneta</span>
+  <div class="tools">
+    <button class="ibtn" id="soundBtn" aria-label="Zvuk uključen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+    <button class="ibtn wide" id="layoutBtn" aria-pressed="false"></button>
+    <button class="ibtn" id="fsBtn" aria-label="Ceo ekran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="ibtn" id="logoutBtn" aria-label="Odjavi se"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+  </div>
+</header>
+<div class="demo" id="demo" hidden>Demo režim: bonovi se vide samo u ovom browseru.</div>
+<div class="agg" id="agg" hidden></div>
+<main class="rail" id="rail"></main>
+<footer class="done-strip" id="doneStrip"><span>Upravo spremno</span></footer>
+<div id="toastRoot"></div>
+
+<script src="config.js"></script>
+<script src="albeyk-db.js"></script>
+<script>
+const DB = window.AlbeykDB;
+const EMBED = !!window.ALBEYK_EMBED || /[?&]embed\b/.test(location.search);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hm = ms => new Date(ms).toLocaleTimeString("sr-RS", { hour:"2-digit", minute:"2-digit", timeZone:"Europe/Belgrade" });
+
+let sound = (() => { try { return localStorage.getItem("albeyk_kuhinja_sound") !== "0"; } catch(e){ return true; } })();
+let actx = null;
+function tone(notes){
+  if(!sound) return;
+  if(EMBED){ try { parent.postMessage({ albeyk:"tone", notes, wave:"sine" }, "*"); } catch(e){} return; }
+  if(!actx) return;
+  const t0 = actx.currentTime + .02;
+  notes.forEach(([f, at, dur, vol]) => {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = "sine"; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t0 + at); g.gain.linearRampToValueAtTime(vol ?? .6, t0 + at + .01);
+    g.gain.exponentialRampToValueAtTime(.001, t0 + at + dur);
+    o.connect(g).connect(actx.destination); o.start(t0 + at); o.stop(t0 + at + dur + .05);
+  });
+}
+const bell = () => tone([[1318,0,.9],[1975,0,.6,.25],[1318,.45,1.1]]);
+
+let wake = null;
+async function keepAwake(){ try { if("wakeLock" in navigator && document.visibilityState === "visible") wake = await navigator.wakeLock.request("screen"); } catch(e){} }
+document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") keepAwake(); });
+
+let orders = [], known = null;
+const prep = () => orders.filter(o => o.status === "prihvaceno").sort((a,b) => (a.acceptedAt || 0) - (b.acceptedAt || 0));
+
+function urgency(o){
+  const now = Date.now(), start = o.acceptedAt || now, eta = o.eta || start + 15 * 60000;
+  if(now > eta) return "late";
+  return (now - start) / Math.max(1, eta - start) > .7 ? "soon" : "ok";
+}
+function ticketHTML(o){
+  const done = new Set(o.itemsDone || []), all = (o.items || []).length && done.size >= o.items.length;
+  const pickup = o.pickupMin ? `dolazi ${hm(o.createdAt + o.pickupMin * 60000)}` : "što pre";
+  return `<article class="ticket ${known && !known.has(o.id + ":p") ? "fresh" : ""}" data-id="${o.id}" data-u="${urgency(o)}">
+    <div class="thead"><span class="tnum">#${o.num}</span><span class="ttime"><b data-el="${o.acceptedAt || 0}">0:00</b>do ${hm(o.eta || Date.now())}</span></div>
+    <div class="tmeta"><span class="who">${esc((o.name || "").split(" ")[0])}</span><span>${pickup}</span></div>
+    <ul class="titems">${(o.items || []).map((i, k) => `<li class="${done.has(k) ? "done" : ""}" data-item="${k}" data-id="${o.id}"><span class="q">${i.qty}×</span><span><span class="n">${esc(i.name)}</span>${i.desc ? `<small>${esc(i.desc)}</small>` : ""}</span></li>`).join("")}</ul>
+    ${o.spicy || o.note ? `<div class="flags">${o.spicy ? `<span class="spicy ${o.spicy === "neljuto" ? "mild" : ""}">${o.spicy === "ljuto" ? "LJUTO" : "NELJUTO"}</span>` : ""}${o.note ? `<div class="tnote">${esc(o.note)}</div>` : ""}</div>` : ""}
+    <div class="tfoot"><button class="bump ${all ? "all" : ""}" data-bump="${o.id}">Spremno</button></div>
+  </article>`;
+}
+
+function render(){
+  const list = prep();
+  const pos = $("#rail").scrollLeft, posY = $("#rail").scrollTop;
+  $("#rail").innerHTML = list.length ? list.map(ticketHTML).join("") : `<div class="empty"><b>Sve je spremljeno</b>Kad šank prihvati porudžbinu, bon se pojavi ovde uz zvono.</div>`;
+  $("#rail").scrollLeft = pos; $("#rail").scrollTop = posY;
+  $("#nPrep").textContent = list.length;
+
+  const waiting = orders.filter(o => o.status === "novo").length;
+  $("#waiting").hidden = !waiting;
+  $("#waiting").textContent = waiting === 1 ? "1 nova čeka potvrdu na šanku" : `${waiting} nove čekaju potvrdu na šanku`;
+
+  const cnt = {};
+  list.forEach(o => { const d = new Set(o.itemsDone || []); (o.items || []).forEach((i, k) => { if(!d.has(k)) cnt[i.name] = (cnt[i.name] || 0) + i.qty; }); });
+  const ent = Object.entries(cnt).sort((a,b) => b[1] - a[1]);
+  $("#agg").hidden = !ent.length;
+  $("#agg").innerHTML = `<span>Ukupno za spremiti</span>` + ent.map(([n, q]) => `<span class="chip"><b>${q}</b>${esc(n)}</span>`).join("");
+
+  const recent = orders.filter(o => o.status === "spremno" && o.readyAt && Date.now() - o.readyAt < 20 * 60000).sort((a,b) => b.readyAt - a.readyAt).slice(0, 6);
+  $("#doneStrip").innerHTML = `<span>Upravo spremno</span>` + (recent.length ? recent.map(o => `<span class="dchip">#${o.num}<button data-undo="${o.id}">Vrati</button></span>`).join("") : `<span style="color:#7F766A;font-weight:600">Još ništa</span>`);
+  tick();
+}
+function tick(){
+  $("#clock").textContent = hm(Date.now());
+  document.querySelectorAll("[data-el]").forEach(el => {
+    const s = Math.max(0, Math.floor((Date.now() - +el.dataset.el) / 1000));
+    el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  });
+  document.querySelectorAll(".ticket").forEach(t => { const o = orders.find(x => x.id === t.dataset.id); if(o) t.dataset.u = urgency(o); });
+}
+
+let toastT;
+function toast(m){ clearTimeout(toastT); $("#toastRoot").innerHTML = `<div class="toast" role="status">${esc(m)}</div>`; toastT = setTimeout(() => $("#toastRoot").innerHTML = "", 3000); }
+const fail = e => { console.error(e); toast("Nije sačuvano. Proveri internet."); };
+
+document.addEventListener("click", e => {
+  const it = e.target.closest("[data-item]");
+  if(it){
+    const o = orders.find(x => x.id === it.dataset.id); if(!o) return;
+    const k = +it.dataset.item, d = new Set(o.itemsDone || []);
+    d.has(k) ? d.delete(k) : d.add(k);
+    o.itemsDone = [...d].sort((a,b) => a-b); render();
+    DB.updateOrder(o.id, { itemsDone: o.itemsDone }).catch(fail);
+    return;
+  }
+  const b = e.target.closest("[data-bump]");
+  if(b){
+    const o = orders.find(x => x.id === b.dataset.bump); if(!o) return;
+    o.status = "spremno"; o.readyAt = Date.now(); render();
+    DB.updateOrder(o.id, { status:"spremno", readyAt: DB.NOW }).then(() => toast(`#${o.num} poslata na šank kao spremna.`)).catch(fail);
+    return;
+  }
+  const u = e.target.closest("[data-undo]");
+  if(u){
+    const o = orders.find(x => x.id === u.dataset.undo); if(!o) return;
+    o.status = "prihvaceno"; render();
+    DB.updateOrder(o.id, { status:"prihvaceno" }).then(() => toast(`#${o.num} je vraćena u pripremu.`)).catch(fail);
+  }
+});
+function syncSound(){ $("#soundBtn").classList.toggle("off", !sound); $("#soundBtn").setAttribute("aria-label", sound ? "Zvuk uključen" : "Zvuk isključen"); }
+$("#soundBtn").onclick = () => { sound = !sound; try { localStorage.setItem("albeyk_kuhinja_sound", sound ? "1" : "0"); } catch(e){} syncSound(); if(sound) bell(); };
+$("#logoutBtn").onclick = () => { if(confirm("Odjaviti se sa kuhinje?")) logout(); };
+$("#fsBtn").onclick = () => { if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(() => {}); };
+
+let started = false;
+function startLive(){
+  if(started) return; started = true;
+  DB.watchOrders((list, err) => {
+    if(!list){ toast(err && err.code === "permission-denied" ? "Nemaš pristup. Prijavi se nalogom šanka." : "Veza sa bazom je prekinuta. Pokušavam ponovo."); return; }
+    const fresh = list.filter(o => o.status === "prihvaceno" && known && !known.has(o.id + ":p"));
+    orders = list; render();
+    known = new Set(list.filter(o => o.status === "prihvaceno").map(o => o.id + ":p").concat(list.map(o => o.id)));
+    if(fresh.length) bell();
+  });
+  DB.watchConnection(on => $("#net").hidden = on);
+  setInterval(tick, 1000);
+}
+function unlock(){ try { if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch(e){} keepAwake(); }
+
+/* ---------- prijava, ugrađen prikaz i raspored ---------- */
+let loginGesture = false;
+function showLogin(){
+  $("#start").hidden = false;
+  $("#goBox").hidden = true; $("#loginBox").hidden = false;
+  $("#loginBox").innerHTML = `<form class="login" id="lf">
+    <label for="le">Korisničko ime</label><input id="le" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+    <label for="lp">Lozinka</label><div class="pw"><input id="lp" type="password" autocomplete="current-password" required><button type="button" id="pwEye">Prikaži</button></div>
+    <div class="err" id="lerr" role="alert"></div>
+    <button class="go-login">Prijavi se</button></form>`;
+  $("#le").focus();
+  $("#pwEye").onclick = () => { const i = $("#lp"), show = i.type === "password"; i.type = show ? "text" : "password"; $("#pwEye").textContent = show ? "Sakrij" : "Prikaži"; };
+  $("#lf").onsubmit = async e => {
+    e.preventDefault(); unlock(); loginGesture = true;
+    $("#lerr").textContent = "";
+    const btn = e.target.querySelector(".go-login"); btn.disabled = true; btn.textContent = "Prijavljujem…";
+    try { await DB.signIn($("#le").value.trim(), $("#lp").value); }
+    catch(err){
+      loginGesture = false; btn.disabled = false; btn.textContent = "Prijavi se";
+      $("#lerr").textContent = /wrong-password|invalid-credential|user-not-found|invalid-email|invalid-login/.test(err.code || "") ? "Pogrešno korisničko ime ili lozinka." : /too-many-requests/.test(err.code || "") ? "Previše pokušaja. Sačekaj minut pa probaj ponovo." : "Prijava nije uspela. Proveri internet.";
+      $("#lp").select();
+    }
+  };
+}
+function showGo(){
+  $("#start").hidden = false; $("#loginBox").hidden = true; $("#goBox").hidden = false;
+  $("#goBtn").onclick = () => { unlock(); $("#start").hidden = true; startLive(); };
+}
+function logout(){ DB.signOut(); }
+
+const LAYOUT_KEY = "albeyk_layout_kuhinja";
+let vert = (() => { try { const v = localStorage.getItem(LAYOUT_KEY); if(v) return v === "v"; } catch(e){} return innerWidth < 700; })();
+const ICON_ROWS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="4.5" rx="1.2"/><rect x="4" y="9.75" width="16" height="4.5" rx="1.2"/><rect x="4" y="16" width="16" height="4.5" rx="1.2"/></svg>', ICON_COLS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="4.5" height="16" rx="1.2"/><rect x="9.75" y="4" width="4.5" height="16" rx="1.2"/><rect x="16" y="4" width="4.5" height="16" rx="1.2"/></svg>';
+function applyLayout(){
+  document.body.classList.toggle("vert", vert);
+  const b = $("#layoutBtn"); if(!b) return;
+  b.setAttribute("aria-pressed", vert);
+  b.innerHTML = (vert ? ICON_COLS : ICON_ROWS) + `<span>${vert ? "Vodoravno" : "Vertikalno"}</span>`;
+}
+function toggleLayout(){ vert = !vert; try { localStorage.setItem(LAYOUT_KEY, vert ? "v" : "h"); } catch(e){} applyLayout(); }
+
+(async function boot(){
+  syncSound(); applyLayout();
+  $("#layoutBtn").onclick = toggleLayout;
+  if(EMBED) document.body.classList.add("embed");
+  $("#clock").textContent = hm(Date.now()); setInterval(() => $("#clock").textContent = hm(Date.now()), 5000);
+  if(!DB){ $("#goBox").innerHTML = "<p>Nedostaju fajlovi config.js i albeyk-db.js pored ove stranice.</p>"; return; }
+  if(DB.mode === "demo") $("#demo").hidden = false;
+  try { await DB.init({ staff:true }); }
+  catch(e){ $("#goBox").innerHTML = "<p>Ne mogu da se povežem sa bazom. Proveri internet i osveži stranicu.</p>"; return; }
+  DB.onAuth(u => {
+    if(u){
+      if(started) return;
+      if(EMBED || loginGesture){ $("#start").hidden = true; startLive(); }
+      else showGo();
+    }
+    else if(started) location.reload();
+    else if(EMBED){ $("#start").hidden = false; $("#loginBox").hidden = true; $("#goBox").hidden = false; $("#goBox").innerHTML = "<p>Prijavi se na stranici Sve zajedno.</p>"; }
+    else showLogin();
+  });
+})();
+</script>
+</body>
+</html>

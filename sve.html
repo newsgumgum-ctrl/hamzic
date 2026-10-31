@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#292929">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ALBEYK Sve zajedno</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E4E6EA;--ink:#292929;--muted:#66666b;--panel:#FFFFFF;--line:#D3D6DC;--red:#DD0001;--gold:#FDB103;color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+[hidden]{display:none !important}
+
+.bar{flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--ink);color:#fff}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;margin-right:6px}
+.brand img{width:36px;height:36px;border-radius:9px;background:#fff}
+nav{display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:999px;padding:4px;overflow-x:auto;max-width:100%}
+nav button{flex:none;border:0;background:transparent;color:#fff;font-weight:800;font-size:15px;padding:8px 15px;border-radius:999px;position:relative}
+nav button[aria-selected="true"]{background:#fff;color:var(--ink)}
+nav button .ping{position:absolute;top:4px;right:5px;width:9px;height:9px;border-radius:50%;background:var(--gold);display:none}
+nav button.alert .ping{display:block;animation:ping 1s ease-in-out infinite}
+@keyframes ping{50%{transform:scale(1.5)}}
+@media (prefers-reduced-motion:reduce){nav button.alert .ping{animation:none}}
+.tools{margin-left:auto;display:flex;gap:8px}
+.ibtn{min-width:42px;height:42px;border-radius:12px;border:0;background:rgba(255,255,255,.12);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;font-weight:800;font-size:14px}
+.ibtn svg{width:21px;height:21px}
+.ibtn.off{background:#fff;color:var(--red)}
+.ibtn[aria-pressed="true"]{background:var(--gold);color:var(--ink)}
+
+main{flex:1;min-height:0;padding:14px 16px 16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:14px;grid-template-columns:400px minmax(0,1fr) minmax(0,1fr)}
+.panel{min-height:0;display:flex;flex-direction:column;gap:8px}
+.panel > h2{flex:none;margin:0;font-size:15px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:8px}
+.panel > h2 a{margin-left:auto;font-size:13px;color:var(--muted)}
+.frame{flex:1;min-height:0;border-radius:18px;overflow:hidden;background:#fff;border:8px solid #2b2b2b}
+.panel.sajt .frame{border-radius:34px;border-width:10px}
+iframe{width:100%;height:100%;border:0;display:block}
+
+/* jedna stranica preko celog ekrana */
+body:not([data-view="all"]) main{grid-template-columns:1fr}
+body[data-view="all"] .panel.magacin{display:none}
+body[data-view="sajt"] .panel:not(.sajt),body[data-view="sank"] .panel:not(.sank),body[data-view="kuhinja"] .panel:not(.kuhinja),body[data-view="magacin"] .panel:not(.magacin){display:none}
+body.vert[data-view="magacin"] .panel.magacin{height:max(700px,92vh)}
+body[data-view="sajt"] .panel.sajt{width:min(420px,100%);justify-self:center}
+
+/* vertikalno: sve jedno ispod drugog */
+body.vert{overflow:auto;height:auto;min-height:100%}
+body.vert main{grid-template-columns:1fr;flex:none}
+body.vert .panel{height:max(640px,88vh)}
+body.vert .panel.sajt{height:min(860px,92vh);width:min(420px,100%);justify-self:center}
+
+@media (max-width:1100px){
+  body:not(.vert)[data-view="all"] main{grid-template-columns:1fr;overflow:auto}
+  body:not(.vert)[data-view="all"] .panel{height:760px}
+}
+@media (max-width:600px){
+  .bar{padding:8px 10px}
+  .brand span{display:none}
+  .ibtn span{display:none}
+  main{padding:10px}
+  .frame,.panel.sajt .frame{border-width:0;border-radius:14px}
+}
+
+.start{position:fixed;inset:0;z-index:80;background:var(--ink);color:#fff;display:grid;place-items:center;text-align:center;padding:24px;overflow:auto}
+.start img{width:100px;height:100px;border-radius:24px;background:#fff;margin:0 auto 18px}
+.start h1{margin:0 0 10px;font-size:38px;font-weight:900;letter-spacing:-.02em}
+.start p{margin:0 auto 24px;max-width:38ch;color:#D6D3CE;font-size:18px}
+.admin-label{display:inline-block;font-weight:800;font-size:15px;border-radius:999px;padding:5px 12px;margin-bottom:16px;background:rgba(255,255,255,.14)}
+.go{font-size:20px;font-weight:900;padding:18px 34px;border:0;background:var(--gold);color:var(--ink);border-radius:999px}
+.login{width:min(380px,100%);margin:0 auto;text-align:left;background:#fff;color:var(--ink);border-radius:20px;padding:22px}
+.login label{display:block;font-weight:700;font-size:14px;margin-bottom:4px}
+.login input{width:100%;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px;background:#fff}
+.login .pw{position:relative}
+.login .pw input{padding-right:96px}
+.login .pw button{position:absolute;right:6px;top:6px;border:0;background:transparent;font-weight:800;font-size:14px;padding:8px 10px;border-radius:8px;color:var(--muted)}
+.login .err{color:var(--red);font-weight:700;font-size:14px;min-height:20px;margin-bottom:6px}
+.login .go-login{width:100%;border:0;border-radius:12px;padding:15px;font-weight:900;font-size:18px;background:var(--gold);color:var(--ink)}
+.login .go-login:disabled{opacity:.6}
+.demo{flex:none;background:#FFF1C9;color:#5A3D00;font-size:14px;font-weight:600;padding:7px 16px}
+</style>
+</head>
+<body data-view="all">
+
+<div class="start" id="start">
+  <div>
+    <img src="logo.png" alt="">
+    <h1>ALBEYK Sve zajedno</h1>
+    <span class="admin-label">Admin panel</span>
+    <div id="loginBox" hidden></div>
+    <div id="goBox" hidden>
+      <p>Dodirni da pokreneš sajt, šank i kuhinju na jednom ekranu. Tako se uključuje zvuk i ekran ostaje upaljen.</p>
+      <button class="go" id="goBtn">Pokreni</button>
+    </div>
+  </div>
+</div>
+
+<header class="bar">
+  <div class="brand"><img src="logo.png" alt=""><span>Sve zajedno</span></div>
+  <nav role="tablist" aria-label="Prikaz">
+    <button role="tab" data-v="all" aria-selected="true">Sve</button>
+    <button role="tab" data-v="sajt" aria-selected="false">Kupac<span class="ping"></span></button>
+    <button role="tab" data-v="sank" aria-selected="false">Šank<span class="ping"></span></button>
+    <button role="tab" data-v="kuhinja" aria-selected="false">Kuhinja<span class="ping"></span></button>
+    <button role="tab" data-v="magacin" aria-selected="false">Magacin<span class="ping"></span></button>
+  </nav>
+  <div class="tools">
+    <button class="ibtn" id="layoutBtn" aria-pressed="false"></button>
+    <button class="ibtn" id="soundBtn" aria-label="Zvuk uključen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+    <button class="ibtn" id="fsBtn" aria-label="Ceo ekran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="ibtn" id="logoutBtn" aria-label="Odjavi se"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+  </div>
+</header>
+<div class="demo" id="demo" hidden>Demo režim: sve se vidi samo u ovom browseru. Pošalji porudžbinu kao kupac, prihvati je na šanku i završi u kuhinji.</div>
+
+<main>
+  <section class="panel sajt"><h2>Sajt za kupce</h2><div class="frame"><iframe id="f-sajt" title="Sajt za kupce"></iframe></div></section>
+  <section class="panel sank"><h2>Šank</h2><div class="frame"><iframe id="f-sank" title="Šank"></iframe></div></section>
+  <section class="panel kuhinja"><h2>Kuhinja</h2><div class="frame"><iframe id="f-kuhinja" title="Kuhinja"></iframe></div></section>
+  <section class="panel magacin"><h2>Magacin</h2><div class="frame"><iframe id="f-magacin" title="Magacin"></iframe></div></section>
+</main>
+
+<script src="config.js"></script>
+<script src="albeyk-db.js"></script>
+<script>
+const DB = window.AlbeykDB;
+const $ = s => document.querySelector(s);
+const FRAMES = window.ALBEYK_FRAMES || {
+  sajt: DB && DB.mode === "demo" ? "index.html?demo" : "index.html",
+  sank: "sank.html?embed=1",
+  kuhinja: "kuhinja.html?embed=1",
+  magacin: "magacin.html?embed=1"
+};
+
+/* zvuk za sve tri stranice ide preko ove stranice */
+let sound = (() => { try { return localStorage.getItem("albeyk_sve_sound") !== "0"; } catch(e){ return true; } })();
+let actx = null;
+function unlock(){ try { if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch(e){} keepAwake(); }
+function play(notes, wave){
+  if(!sound || !actx || !Array.isArray(notes)) return;
+  const t0 = actx.currentTime + .02;
+  notes.slice(0, 8).forEach(([f, at, dur, vol]) => {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = wave === "sine" ? "sine" : "triangle"; o.frequency.value = +f || 440;
+    g.gain.setValueAtTime(0, t0 + at); g.gain.linearRampToValueAtTime(vol ?? .5, t0 + at + .015);
+    g.gain.exponentialRampToValueAtTime(.001, t0 + at + dur);
+    o.connect(g).connect(actx.destination); o.start(t0 + at); o.stop(t0 + at + dur + .05);
+  });
+}
+let wake = null;
+async function keepAwake(){ try { if("wakeLock" in navigator && document.visibilityState === "visible") wake = await navigator.wakeLock.request("screen"); } catch(e){} }
+document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") keepAwake(); });
+
+/* prikaz */
+let view = "all";
+function show(v){
+  view = v; document.body.dataset.view = v;
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.v === v));
+  const b = document.querySelector(`nav button[data-v="${v}"]`); if(b) b.classList.remove("alert");
+  if(v === "magacin" && loaded) loadOne("magacin");
+}
+function loadOne(k){
+  const f = $("#f-" + k), v = FRAMES[k];
+  if(!v || f.dataset.on) return; f.dataset.on = "1";
+  if(v.srcdoc) f.srcdoc = v.srcdoc; else f.src = v;
+}
+document.querySelector("nav").onclick = e => { const b = e.target.closest("button"); if(b) show(b.dataset.v); };
+
+addEventListener("message", e => {
+  const src = ["sajt","sank","kuhinja","magacin"].find(k => $("#f-" + k).contentWindow === e.source);
+  if(e.data === "go-kuhinja"){ show("kuhinja"); return; }
+  if(e.data && e.data.albeyk === "tone"){
+    play(e.data.notes, e.data.wave);
+    if(src && view !== "all" && view !== src) document.querySelector(`nav button[data-v="${src}"]`).classList.add("alert");
+  }
+});
+
+const LAYOUT_KEY = "albeyk_layout_sve";
+let vert = (() => { try { const v = localStorage.getItem(LAYOUT_KEY); if(v) return v === "v"; } catch(e){} return innerWidth < 700; })();
+const ICON_ROWS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="16" height="4.5" rx="1.2"/><rect x="4" y="9.75" width="16" height="4.5" rx="1.2"/><rect x="4" y="16" width="16" height="4.5" rx="1.2"/></svg>', ICON_COLS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="4.5" height="16" rx="1.2"/><rect x="9.75" y="4" width="4.5" height="16" rx="1.2"/><rect x="16" y="4" width="4.5" height="16" rx="1.2"/></svg>';
+function applyLayout(){
+  document.body.classList.toggle("vert", vert);
+  const b = $("#layoutBtn"); b.setAttribute("aria-pressed", vert);
+  b.innerHTML = (vert ? ICON_COLS : ICON_ROWS) + `<span>${vert ? "Vodoravno" : "Vertikalno"}</span>`;
+}
+$("#layoutBtn").onclick = () => { vert = !vert; try { localStorage.setItem(LAYOUT_KEY, vert ? "v" : "h"); } catch(e){} applyLayout(); };
+function syncSound(){ $("#soundBtn").classList.toggle("off", !sound); $("#soundBtn").setAttribute("aria-label", sound ? "Zvuk uključen" : "Zvuk isključen"); }
+$("#soundBtn").onclick = () => { sound = !sound; try { localStorage.setItem("albeyk_sve_sound", sound ? "1" : "0"); } catch(e){} syncSound(); if(sound) play([[1047,0,.4,.4],[1568,.2,.7,.4]]); };
+$("#fsBtn").onclick = () => { if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(() => {}); };
+$("#logoutBtn").onclick = () => { if(confirm("Odjaviti se sa admin panela?")) DB.signOut(); };
+
+/* učitavanje stranica tek posle prijave */
+let loaded = false;
+function loadFrames(){
+  if(loaded) return; loaded = true;
+  $("#start").hidden = true;
+  ["sajt","sank","kuhinja"].forEach(loadOne);
+  if(view === "magacin") loadOne("magacin");
+}
+
+let loginGesture = false;
+function showLogin(){
+  $("#start").hidden = false; $("#goBox").hidden = true; $("#loginBox").hidden = false;
+  $("#loginBox").innerHTML = `<form class="login" id="lf">
+    <label for="le">Korisničko ime</label><input id="le" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+    <label for="lp">Lozinka</label><div class="pw"><input id="lp" type="password" autocomplete="current-password" required><button type="button" id="pwEye">Prikaži</button></div>
+    <div class="err" id="lerr" role="alert"></div>
+    <button class="go-login">Prijavi se</button></form>`;
+  $("#le").focus();
+  $("#pwEye").onclick = () => { const i = $("#lp"), s = i.type === "password"; i.type = s ? "text" : "password"; $("#pwEye").textContent = s ? "Sakrij" : "Prikaži"; };
+  $("#lf").onsubmit = async e => {
+    e.preventDefault(); unlock(); loginGesture = true; $("#lerr").textContent = "";
+    const btn = e.target.querySelector(".go-login"); btn.disabled = true; btn.textContent = "Prijavljujem…";
+    try { await DB.signIn($("#le").value.trim(), $("#lp").value); }
+    catch(err){
+      loginGesture = false; btn.disabled = false; btn.textContent = "Prijavi se";
+      $("#lerr").textContent = /wrong-password|invalid-credential|user-not-found|invalid-email|invalid-login/.test(err.code || "") ? "Pogrešno korisničko ime ili lozinka." : /too-many-requests/.test(err.code || "") ? "Previše pokušaja. Sačekaj minut pa probaj ponovo." : "Prijava nije uspela. Proveri internet.";
+      $("#lp").select();
+    }
+  };
+}
+function showGo(){
+  $("#start").hidden = false; $("#loginBox").hidden = true; $("#goBox").hidden = false;
+  $("#goBtn").onclick = () => { unlock(); loadFrames(); };
+}
+
+(async function boot(){
+  applyLayout(); syncSound();
+  if(!DB){ $("#goBox").hidden = false; $("#goBox").innerHTML = "<p>Nedostaju fajlovi config.js i albeyk-db.js pored ove stranice.</p>"; return; }
+  if(DB.mode === "demo") $("#demo").hidden = false;
+  try { await DB.init({ staff:true }); }
+  catch(e){ $("#goBox").hidden = false; $("#goBox").innerHTML = "<p>Ne mogu da se povežem sa bazom. Proveri internet i osveži stranicu.</p>"; return; }
+  DB.onAuth(u => {
+    if(u){ if(loaded) return; if(loginGesture) loadFrames(); else showGo(); }
+    else if(loaded) location.reload();
+    else showLogin();
+  });
+})();
+</script>
+</body>
+</html>
